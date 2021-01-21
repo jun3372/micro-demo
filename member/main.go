@@ -1,8 +1,6 @@
 package main
 
 import (
-	"github.com/jun3372/micro-demo/pkg/db"
-
 	"member/handler"
 	pb "member/proto"
 

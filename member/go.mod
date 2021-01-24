@@ -5,7 +5,6 @@ go 1.15
 require (
 	github.com/golang/protobuf v1.4.3
 	github.com/jinzhu/gorm v1.9.16
-	github.com/jun3372/micro-demo v0.0.0-20210121155413-6bbf30344f8d
 	github.com/micro/micro/v3 v3.0.4
 	google.golang.org/protobuf v1.25.0
 )

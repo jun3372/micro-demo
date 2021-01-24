@@ -59,15 +59,15 @@ func Get() *gorm.DB {
 }
 
 func InitConfig(project string) (Config, error) {
-	return Config{
-		Dialect:  "mysql",
-		Host:     "54.223.118.13",
-		Port:     3306,
-		User:     "root",
-		Password: "fe22a0fb4a94efae",
-		Dbname:   "demo",
-		Charset:  "utf8",
-	}, nil
+	// return Config{
+	// 	Dialect:  "mysql",
+	// 	Host:     "54.223.118.13",
+	// 	Port:     3306,
+	// 	User:     "root",
+	// 	Password: "fe22a0fb4a94efae",
+	// 	Dbname:   "demo",
+	// 	Charset:  "utf8",
+	// }, nil
 
 	var (
 		cfg Config

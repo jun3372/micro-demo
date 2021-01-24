@@ -5,7 +5,8 @@ import (
 	"sync"
 
 	jsoniter "github.com/json-iterator/go"
-	"github.com/micro/micro/v3/service/config"
+	"github.com/micro/micro/v3/service/config/client"
+	"github.com/micro/micro/v3/service/logger"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
@@ -26,11 +27,11 @@ var (
 	once  sync.Once
 )
 
-func Init(project string) (*gorm.DB, error) {
+func Init(namespace, project string) (*gorm.DB, error) {
 	var err error
 	once.Do(func() {
 		var cfg Config
-		if cfg, err = InitConfig(project); err != nil {
+		if cfg, err = InitConfig(namespace, project); err != nil {
 			return
 		}
 
@@ -58,7 +59,7 @@ func Get() *gorm.DB {
 	return sqlDB
 }
 
-func InitConfig(project string) (Config, error) {
+func InitConfig(namespace, project string) (Config, error) {
 	// return Config{
 	// 	Dialect:  "mysql",
 	// 	Host:     "54.223.118.13",
@@ -80,19 +81,26 @@ func InitConfig(project string) (Config, error) {
 			Dbname:   "demo",
 			Charset:  "utf8",
 		}
+
+		// 实例化配置
+		config   = client.NewConfig(namespace)
 		val, err = config.Get(project)
 	)
+
 	if err != nil {
+		logger.Warn("获取数据库配置失败: err=", err)
 		return def, err
 	}
 
-	context := val.String("")
-	if context == "" {
+	if val.String("") == "" {
+		logger.Warn("获取数据库配置内容失败: context=", val)
 		return def, err
 	}
 
 	json := jsoniter.ConfigCompatibleWithStandardLibrary
-	err = json.Unmarshal([]byte(context), &cfg)
+	if err = json.Unmarshal(val.Bytes(), &cfg); err != nil {
+		logger.Warn("解密配置失败:err=", err)
+	}
 	return def, err
 }
 

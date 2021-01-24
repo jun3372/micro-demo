@@ -18,12 +18,12 @@ func main() {
 		service.Version("latest"),
 	)
 
-	_db, err := db.Init("db_member")
+	_db, err := db.Init("", "db_member")
 	if err != nil {
 		panic(err)
 	}
 
-	_db.AutoMigrate(&model.Member{})
+	_ = _db.AutoMigrate(&model.Member{})
 
 	// Register handler
 	_ = pb.RegisterMemberHandler(srv.Server(), handler.NewMember())

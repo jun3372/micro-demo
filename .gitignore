@@ -1,0 +1,7 @@
+
+/.idea
+/.vscode
+/go.sum
+/**/go.sum
+/**/.idea
+/**/.vscode

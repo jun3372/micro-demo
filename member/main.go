@@ -18,8 +18,9 @@ func main() {
 		service.Version("latest"),
 	)
 
-	_db, err := db.Init("", "db_member")
+	_db, err := db.Init("db.member")
 	if err != nil {
+		logger.Fatalf("Error loading config: %v", err)
 		panic(err)
 	}
 

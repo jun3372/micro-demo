@@ -4,28 +4,23 @@ import (
 	"context"
 
 	pb "member/proto"
+	"member/server"
 )
 
-type Member struct{}
+type Member struct {
+	srv server.IMemberServer
+}
 
 func NewMember() *Member {
-	return &Member{}
+	return &Member{
+		srv: server.NewMemberServer(),
+	}
 }
 
 func (m Member) Login(ctx context.Context, request *pb.LoginRequest, response *pb.LoginResponse) error {
-	response.Msg = "err:username=" + request.GetUsername()
-	response.Data = &pb.JwtToken{Token: "password:" + request.GetPassword()}
-	return nil
+	return m.srv.Login(request, response)
 }
 
 func (m Member) Signup(ctx context.Context, request *pb.SignupRequest, response *pb.SignupResponse) error {
-	panic("implement me")
+	return m.srv.Signup(request, response)
 }
-
-//
-// // Call is a single request handler called via client.Call or the generated client code
-// func (e *Member) Call(ctx context.Context, req *member.Request, rsp *member.Response) error {
-// 	log.Info("Received Member.Call request")
-// 	rsp.Msg = "Hello " + req.Name
-// 	return nil
-// }

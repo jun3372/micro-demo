@@ -3,13 +3,16 @@ package main
 import (
 	"fmt"
 
+	"github.com/micro/micro/v3/service"
+	"github.com/micro/micro/v3/service/config"
 	"gorm.io/gorm"
 
 	"github.com/jun3372/micro-demo/pkg/db"
 )
 
 func main() {
-	TestDB()
+	// TestDB()
+	TestConfig()
 }
 
 type Demo struct {
@@ -21,7 +24,7 @@ type Demo struct {
 }
 
 func TestDB() {
-	_db, err := db.Init("db_member")
+	_db, err := db.Init("", "db_member")
 	if err != nil {
 		panic(err)
 	}
@@ -31,4 +34,14 @@ func TestDB() {
 		panic(err)
 	}
 	fmt.Println("ok")
+}
+
+func TestConfig() {
+	// setup the service
+	srv := service.New(service.Name("member"))
+	srv.Init()
+
+	// read config value
+	val, err := config.Get("db.member")
+	fmt.Println("Value of key.subkey: ", val.String(""), err)
 }

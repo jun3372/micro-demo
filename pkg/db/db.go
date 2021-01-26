@@ -2,6 +2,7 @@ package db
 
 import (
 	"fmt"
+	"strings"
 	"sync"
 
 	"github.com/micro/micro/v3/service/config"
@@ -36,19 +37,12 @@ func Init(project string) (*gorm.DB, error) {
 		}
 
 		// _db, err := gorm.Open("user:password@/dbname?charset=utf8&parseTime=True&loc=Local", &gorm.Config)
-		sqlDB, err = gorm.Open(mysql.Open(cfg.GetLink()), &gorm.Config{
+		sqlDB, err = gorm.Open(cfg.Director(), &gorm.Config{
 			NamingStrategy: schema.NamingStrategy{
 				TablePrefix:   "",   // 表名前缀，`User` 的表名应该是 `t_users`
 				SingularTable: true, // 使用单数表名，启用该选项，此时，`User` 的表名应该是 `t_user`
 			},
 		})
-
-		// 全局禁用表名复数
-		// SetMaxIdleConns 设置空闲连接池中连接的最大数量
-		// sqlDB.SetMaxIdleConns(10)
-
-		// SetMaxOpenConns 设置打开数据库连接的最大数量。
-		// sqlDB.SetMaxOpenConns(100)
 	})
 
 	return sqlDB, err
@@ -80,8 +74,27 @@ func InitConfig(project string) (*Config, error) {
 }
 
 func (c Config) GetLink() string {
-	if c.Link == "" {
-		return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s&parseTime=True&loc=Local", c.User, c.Password, c.Host, c.Port, c.Dbname, c.Charset)
+	if c.Link != "" {
+		return c.Link
 	}
-	return c.Link
+
+	var link = ""
+	switch strings.ToUpper(c.Dialect) {
+	case "MYSQL":
+	default:
+		link = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s&parseTime=True&loc=Local", c.User, c.Password, c.Host, c.Port, c.Dbname, c.Charset)
+	}
+
+	return link
+}
+
+// 获取连接驱动
+func (c Config) Director() gorm.Dialector {
+	switch strings.ToUpper(c.Dialect) {
+	case "MYSQL":
+	default:
+		return mysql.Open(c.GetLink())
+	}
+
+	return mysql.Open(c.GetLink())
 }
